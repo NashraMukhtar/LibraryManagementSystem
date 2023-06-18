@@ -1,5 +1,11 @@
 const mongoose = require("mongoose");
 
+const statuses = Object.freeze({
+  WAITING: "waiting",
+  APPROVED: "approved",
+  REJECTED: "rejected",
+});
+
 const requestSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -8,7 +14,8 @@ const requestSchema = new mongoose.Schema({
   status: {
     type: String,
     required: true,
-    default: "not Approved",
+    enum: Object.values(statuses),
+    default: statuses.WAITING,
   },
   book: {
     type: mongoose.Schema.Types.ObjectId,

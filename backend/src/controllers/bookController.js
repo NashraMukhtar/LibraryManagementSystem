@@ -47,10 +47,12 @@ const addBook = async (req, res, next) => {
 //Delete Book
 const deleteBook = async (req, res, next) => {
   try {
-    const book = await bookModel.findByIdAndDelete(req.params.id);
+    const book = await bookModel.findById(req.params.id);
     if (!book) {
       return res.status(404).json("Book not Found");
     }
+    const users = book.borrowedBy;
+    console.log(users);
     return res.status(200).json({ message: "Book Deleted Successfully" });
   } catch (err) {
     next(err);

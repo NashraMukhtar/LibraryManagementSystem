@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 
 const tokenSchema = new mongoose.Schema({
+  username: {
+    type: String,
+  },
   refreshToken: {
     type: String,
   },

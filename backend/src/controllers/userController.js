@@ -3,6 +3,25 @@ const bookModel = require("../models/bookModel");
 const jwt = require("jsonwebtoken");
 const refreshtokenModel = require("../models/refreshtokenModel");
 
+//IsAdmin Auth
+const ckeckAdmin = async (req, res, next) => {
+  try {
+    const user = req.user;
+    if (!user) return res.status(400).json("User doesn't exists");
+    if (
+      user.user.isAdmin == false ||
+      user.user.isAdmin == undefined ||
+      user.user.isAdmin == null
+    ) {
+      return res.status(403).json("You are not an Admin");
+    } else {
+      next();
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
 //Token Auth Function
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
@@ -11,7 +30,6 @@ const authenticateToken = (req, res, next) => {
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
     if (err) return res.status(403).json(err);
     req.user = user;
-    console.log(req.user);
     next();
   });
 };
@@ -31,7 +49,7 @@ const checkRefreshToken = async (req, res, next) => {
     jwt.verify(refreshtoken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
       if (err) return res.status(403).json(err);
       const accessToken = jwt.sign({ user }, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: "60s",
+        expiresIn: "1800s",
       });
       res.status(200).json({ accessToken });
     });
@@ -43,14 +61,6 @@ const checkRefreshToken = async (req, res, next) => {
 //Register NEW User (prefer salting next time)
 const newUser = async (req, res, next) => {
   try {
-    // const user = await userModel.create({
-    //   username: "malaika",
-    //   email: "abns@gmail",
-    //   password: "abc1234",
-    //   phone: 1234567890,
-    //   gender: "female",
-    // });
-    // console.log(user);
     const user = await userModel.findOne({ username: req.body.username });
     if (user) {
       return res
@@ -158,10 +168,13 @@ const login = async (req, res, next) => {
       return res.status(400).json("Incorrect password");
     }
     const token = jwt.sign({ user }, process.env.ACCESS_TOKEN_SECRET, {
-      expiresIn: "60s",
+      expiresIn: "1800s",
     });
     const refreshToken = jwt.sign({ user }, process.env.REFRESH_TOKEN_SECRET);
-    await refreshtokenModel.create({ refreshToken: refreshToken });
+    await refreshtokenModel.create({
+      username: user.username,
+      refreshToken: refreshToken,
+    });
     console.log("Access Token = " + token);
     console.log("Refresh Token = " + refreshToken);
     return res.status(200).json({ user: user, token: token });
@@ -191,4 +204,5 @@ module.exports = {
   authenticateToken,
   logout,
   checkRefreshToken,
+  ckeckAdmin,
 };

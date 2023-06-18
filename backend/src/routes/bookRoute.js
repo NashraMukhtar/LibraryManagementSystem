@@ -7,16 +7,20 @@ const {
   deleteBook,
   updateBook,
 } = require("../controllers/bookController");
+const {
+  ckeckAdmin,
+  authenticateToken,
+} = require("../controllers/userController");
 
 //GET All Books
 router.get("/all-books", getAllBooks);
 //GET Book By ID
 router.get("/byID/:id", getBookById);
 //ADD New Book
-router.post("/add-book", addBook);
+router.post("/add-book", authenticateToken, ckeckAdmin, addBook);
 //DELETE Book
-router.delete("/delete-book/:id", deleteBook);
+router.delete("/delete-book/:id/", authenticateToken, ckeckAdmin, deleteBook);
 //UPDATE Book
-router.patch("/update-book/:id", updateBook);
+router.patch("/update-book/:id/", authenticateToken, ckeckAdmin, updateBook);
 
 module.exports = router;
