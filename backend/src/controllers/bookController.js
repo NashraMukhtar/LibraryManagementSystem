@@ -7,20 +7,20 @@ const getAllBooks = async (req, res, next) => {
     if (!books) {
       return res.status(404).json({ message: "No Books Found" });
     }
-    return res.status(200).json({
-      book: books.map((book) => {
-        book.toJSON();
-      }),
-    });
+    return res.status(200).json(
+      books.map((book) => {
+        return book.toJSON();
+      })
+    );
   } catch (err) {
     next(err);
   }
 };
 
-//GET Book by ID
-const getBookById = async (req, res, next) => {
+//GET Book by Title
+const getBookByTitle = async (req, res, next) => {
   try {
-    const book = await bookModel.findById(req.params.id);
+    const book = await bookModel.findOne({ title: req.params.title });
     if (!book) {
       return res.status(404).json("Book not Found");
     }
@@ -47,12 +47,10 @@ const addBook = async (req, res, next) => {
 //Delete Book
 const deleteBook = async (req, res, next) => {
   try {
-    const book = await bookModel.findById(req.params.id);
+    const book = await bookModel.findOneAndDelete({ title: req.body.title });
     if (!book) {
       return res.status(404).json("Book not Found");
     }
-    const users = book.borrowedBy;
-    console.log(users);
     return res.status(200).json({ message: "Book Deleted Successfully" });
   } catch (err) {
     next(err);
@@ -62,16 +60,26 @@ const deleteBook = async (req, res, next) => {
 //UPDATE Book
 const updateBook = async (req, res, next) => {
   try {
-    const book = await bookModel.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
+    const book = await bookModel.findOneAndUpdate(
+      { title: req.body.title },
+      req.body,
+      {
+        new: true,
+      }
+    );
     if (!book) {
       return res.status(404).json("Book not Found");
     }
-    return res.status(200).json({ message: "Book Updated Successfully" });
+    return res.status(200).json({ book: book });
   } catch (err) {
     next(err);
   }
 };
 
-module.exports = { getAllBooks, getBookById, addBook, deleteBook, updateBook };
+module.exports = {
+  getAllBooks,
+  getBookByTitle,
+  addBook,
+  deleteBook,
+  updateBook,
+};

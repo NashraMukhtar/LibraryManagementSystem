@@ -7,6 +7,9 @@ const bookRoute = require("./routes/bookRoute");
 const userRoute = require("./routes/userRoute");
 const requestRoute = require("./routes/requestRoute");
 
+var cors = require("cors");
+
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieparser());

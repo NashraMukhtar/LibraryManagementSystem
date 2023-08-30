@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const {
   getAllBooks,
-  getBookById,
+  getBookByTitle,
   addBook,
   deleteBook,
   updateBook,
@@ -15,12 +15,12 @@ const {
 //GET All Books
 router.get("/all-books", getAllBooks);
 //GET Book By ID
-router.get("/byID/:id", getBookById);
+router.get("/by-title/:title", getBookByTitle);
 //ADD New Book
 router.post("/add-book", authenticateToken, ckeckAdmin, addBook);
 //DELETE Book
-router.delete("/delete-book/:id/", authenticateToken, ckeckAdmin, deleteBook);
+router.delete("/delete-book", authenticateToken, ckeckAdmin, deleteBook);
 //UPDATE Book
-router.patch("/update-book/:id/", authenticateToken, ckeckAdmin, updateBook);
+router.patch("/update-book", authenticateToken, ckeckAdmin, updateBook);
 
 module.exports = router;
